@@ -1,5 +1,8 @@
 """Classes for melon orders."""
 
+from random import randint
+from datetime import datetime
+
 
 class AbstractMelonOrder:
     """An abstract base class that other Melon Orders inherit from"""
@@ -15,12 +18,36 @@ class AbstractMelonOrder:
         self.species = species
         self.qty = qty
         self.shipped = False
-        self.country_code = country_code.upper()
+        # self.country_code = country_code.upper()
+
+
+    def get_base_price(self):
+        """Return a randomized base price (5-9) including splurge pricing"""
+
+        rand_price = randint(5, 9)
+
+        # Add splurge pricing
+        # Monday - Friday are 1-5 and mornings 8-11am
+        weekdays = list(range(1, 6))
+        # print(weekdays)
+        day_of_week = datetime.now().strftime('%w')
+        # print(day_of_week)
+        mornings = list(range(8, 12))
+        # print(mornings)
+        hour = datetime.now().strftime('%H')
+        # print(hour)
+
+        if day_of_week in weekdays and hour in mornings:
+            rand_price += 4
+
+        return rand_price
+
 
     def get_total(self):
         """Calculate price, including tax."""
 
-        base_price = 5
+        base_price = self.get_base_price()
+        # print(f"base: {base_price}")
 
         # Add updated pricing for Christmas melons
         if self.species == "Christmas":
@@ -40,11 +67,6 @@ class AbstractMelonOrder:
         """Record the fact than an order has been shipped."""
 
         self.shipped = True
-
-    def get_country_code(self):
-        """Return the country code."""
-
-        return self.country_code
 
 
 class DomesticMelonOrder(AbstractMelonOrder):
@@ -83,7 +105,15 @@ class InternationalMelonOrder(AbstractMelonOrder):
     order_type = "international"
     tax = 0.17
 
+    def __init__(self, species, qty, country_code):
+        super().__init__(species, qty)
 
+        self.country_code = country_code.upper()
+
+    def get_country_code(self):
+        """Return the country code."""
+
+        return self.country_code
 
     # def __init__(self, species, qty, country_code):
     #     """Initialize melon order attributes."""
@@ -122,15 +152,13 @@ class GovernmentMelonOrder(AbstractMelonOrder):
     tax = 0
 
     def __init__(self, species, qty, country_code="US"):
-        super().__init__(species, qty, country_code="US")
+        super().__init__(species, qty, country_code)
         
         self.passed_inspection = False
 
     # @staticmethod
     def mark_inspection(self, passed):
-        """Returns a boolean of whether the order passed inspection"""
+        """Records whether the order passed inspection or not"""
 
         self.passed_inspection = passed
-
-        return self.passed_inspection
 
