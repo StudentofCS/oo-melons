@@ -20,7 +20,18 @@ class AbstractMelonOrder:
         """Calculate price, including tax."""
 
         base_price = 5
+
+        # Add updated pricing for Christmas melons
+        if self.species == "Christmas":
+            base_price *= 1.5
+
         total = (1 + self.tax) * self.qty * base_price
+
+        # Update internation order pricing
+        if (self.order_type == "international" and
+            self.qty < 10):
+
+            total += 3    
 
         return total
     
