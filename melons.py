@@ -7,6 +7,7 @@ class AbstractMelonOrder:
     # Attributes that will change in subclasses
     order_type = None
     tax = 0
+    # passed_inspection = False
 
     def __init__(self, species, qty, country_code="US"):
         """Initialize melon order attributes"""
@@ -27,7 +28,7 @@ class AbstractMelonOrder:
 
         total = (1 + self.tax) * self.qty * base_price
 
-        # Update internation order pricing
+        # Update international order pricing
         if (self.order_type == "international" and
             self.qty < 10):
 
@@ -46,11 +47,9 @@ class AbstractMelonOrder:
         return self.country_code
 
 
-
 class DomesticMelonOrder(AbstractMelonOrder):
     """A melon order within the USA."""
 
-    ## Question, why do we not need self for these attributes?
     order_type = "domestic"
     tax = 0.08
 
@@ -113,3 +112,25 @@ class InternationalMelonOrder(AbstractMelonOrder):
     #     """Return the country code."""
 
     #     return self.country_code
+
+
+class GovernmentMelonOrder(AbstractMelonOrder):
+    """Government tax-free melon order."""
+
+    # Inspection boolean that is defaulted to False
+    order_type = "government"
+    tax = 0
+
+    def __init__(self, species, qty, country_code="US"):
+        super().__init__(species, qty, country_code="US")
+        
+        self.passed_inspection = False
+
+    # @staticmethod
+    def mark_inspection(self, passed):
+        """Returns a boolean of whether the order passed inspection"""
+
+        self.passed_inspection = passed
+
+        return self.passed_inspection
+
